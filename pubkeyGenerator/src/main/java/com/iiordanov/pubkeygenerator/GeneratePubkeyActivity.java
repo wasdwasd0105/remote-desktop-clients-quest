@@ -443,7 +443,7 @@ public class GeneratePubkeyActivity extends Activity implements OnEntropyGathere
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(TAG, "onActivityResult");
+        android.util.Log.i(TAG, "onActivityResult");
 
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
@@ -463,10 +463,10 @@ public class GeneratePubkeyActivity extends Activity implements OnEntropyGathere
                         }
                         Toast.makeText(getBaseContext(), getString(R.string.success_importing), Toast.LENGTH_LONG).show();
                     } else {
-                        Log.e(TAG, "File uri not found, not importing key");
+                        android.util.Log.e(TAG, "File uri not found, not importing key");
                     }
                 } else {
-                    Log.e(TAG, "Error while selecting file to import key from");
+                    android.util.Log.e(TAG, "Error while selecting file to import key from");
                 }
                 break;
             case SAVE_KEY_REQUEST:
@@ -477,10 +477,10 @@ public class GeneratePubkeyActivity extends Activity implements OnEntropyGathere
                         OutputStream out = Utilities.Companion.getOutputStreamFromUri(resolver, data.getData());
                         Utilities.Companion.outputToStream(publicKeySSHFormat, out);
                     } else {
-                        Log.e(TAG, "File uri not found, not exporting pubkey");
+                        android.util.Log.e(TAG, "File uri not found, not exporting pubkey");
                     }
                 } else {
-                    Log.e(TAG, "Error while selecting file to export pubkey to");
+                    android.util.Log.e(TAG, "Error while selecting file to export pubkey to");
                 }
                 break;
         }

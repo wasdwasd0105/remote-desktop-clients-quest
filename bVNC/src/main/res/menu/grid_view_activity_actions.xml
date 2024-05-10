@@ -38,10 +38,10 @@
 
     <item
         android:id="@+id/actionEditDefaultSettings"
-        android:icon="@android:drawable/ic_menu_preferences"
+        android:icon="@android:drawable/ic_menu_manage"
         android:onClick="editDefaultSettings"
-        android:showAsAction="never"
+        android:showAsAction="ifRoom"
         android:title="@string/action_edit_default_settings"
-        app:showAsAction="never"
+        app:showAsAction="ifRoom"
         tools:ignore="AppCompatResource" />
 </menu>

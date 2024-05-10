@@ -26,9 +26,9 @@ public class RemoteRdpPointer extends RemotePointer {
 
     public RemoteRdpPointer(
             RfbConnectable rfbConnectable, Context context, InputCarriable remoteInput,
-            Viewable canvas, Handler handler, boolean useDpadAsPointer, boolean debugLogging
+            Viewable canvas, Handler handler, boolean debugLogging
     ) {
-        super(rfbConnectable, context, remoteInput, canvas, handler, useDpadAsPointer, debugLogging);
+        super(rfbConnectable, context, remoteInput, canvas, handler, debugLogging);
     }
 
     private void sendButtonDownOrMoveButtonDown(int x, int y, int metaState) {
@@ -125,8 +125,10 @@ public class RemoteRdpPointer extends RemotePointer {
         }
 
         canvas.invalidateMousePosition();
-        pointerX = x;
-        pointerY = y;
+
+        //fix for meta quest
+        pointerX = x + 6;
+        pointerY = y + 6;
 
         // Do not let mouse pointer leave the bounds of the desktop.
         if (pointerX < 0) {

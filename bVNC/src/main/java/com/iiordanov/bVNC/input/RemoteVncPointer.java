@@ -44,10 +44,9 @@ public class RemoteVncPointer extends RemotePointer {
             InputCarriable remoteInput,
             Viewable canvas,
             Handler handler,
-            boolean useDpadAsArrows,
             boolean debugLogging
     ) {
-        super(rfb, context, remoteInput, canvas, handler, useDpadAsArrows, debugLogging);
+        super(rfb, context, remoteInput, canvas, handler, debugLogging);
     }
 
     @Override

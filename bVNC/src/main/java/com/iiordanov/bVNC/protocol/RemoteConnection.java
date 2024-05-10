@@ -44,7 +44,6 @@ import com.iiordanov.bVNC.Decoder;
 import com.iiordanov.bVNC.SSHConnection;
 import com.iiordanov.bVNC.Utils;
 import com.iiordanov.bVNC.input.KeyInputHandler;
-import com.iiordanov.bVNC.input.PointerInputHandler;
 import com.iiordanov.bVNC.input.RemoteKeyboard;
 import com.undatech.opaque.Connection;
 import com.undatech.opaque.InputCarriable;
@@ -59,9 +58,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
-abstract public class RemoteConnection implements PointerInputHandler, KeyInputHandler, InputCarriable {
+abstract public class RemoteConnection implements KeyInputHandler, InputCarriable {
 
-    private final static String TAG = "RemoteConnection";
+    private final static String TAG = "RemoteCanvas";
 
     // Connection parameters
     public Connection connection;
@@ -381,9 +380,5 @@ abstract public class RemoteConnection implements PointerInputHandler, KeyInputH
 
     public boolean canUpdateColorModelConnected() {
         return false;
-    }
-
-    public boolean onKeyAsPointerEvent(int keyCode, KeyEvent event) {
-        return pointer.hardwareButtonsAsMouseEvents(keyCode, event, 0);
     }
 }

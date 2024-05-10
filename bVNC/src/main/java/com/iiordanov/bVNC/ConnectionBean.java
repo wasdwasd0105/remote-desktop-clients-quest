@@ -27,9 +27,10 @@ import android.util.Log;
 import android.widget.ImageView.ScaleType;
 
 import com.antlersoft.android.dbimpl.NewInstance;
-import com.iiordanov.bVNC.input.TouchInputHandlerDirectSwipePan;
+//import com.iiordanov.bVNC.input.TouchInputHandlerDirectSwipePan;
+import com.iiordanov.bVNC.input.TouchInputHandlerDirectDragPan;
+
 import com.iiordanov.util.NetworkUtils;
-import com.undatech.opaque.util.GeneralUtils;
 import com.undatech.remoteClientUi.R;
 
 import net.sqlcipher.database.SQLiteDatabase;
@@ -64,20 +65,19 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
     private boolean showOnlyConnectionNicknames = false;
 
     public ConnectionBean(Context context) {
-        String inputMode = TouchInputHandlerDirectSwipePan.ID;
-        boolean preferSendingUnicode = false;
-        boolean useDpadAsArrows = true;
+        String inputMode = TouchInputHandlerDirectDragPan.ID;
+        Boolean preferSendingUnicode = false;
+
         if (context == null) {
             context = App.getContext();
         }
 
         if (context != null) {
-            useDpadAsArrows = !GeneralUtils.isTv(context);
             inputMode = Utils.querySharedPreferenceString(context, Constants.defaultInputMethodTag,
-                    TouchInputHandlerDirectSwipePan.ID);
+                    TouchInputHandlerDirectDragPan.ID);
             preferSendingUnicode = Utils.querySharedPreferenceBoolean(context, Constants.preferSendingUnicode);
         } else {
-            Log.e(TAG, "Failed to query defaults from shared preferences, context is null.");
+            android.util.Log.e(TAG, "Failed to query defaults from shared preferences, context is null.");
         }
 
         showOnlyConnectionNicknames = Utils.querySharedPreferenceBoolean(context, Constants.showOnlyConnectionNicknames);
@@ -123,9 +123,9 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setCertSubject("");
         setColorModel(COLORMODEL.C24bit.nameString());
         setPrefEncoding(RfbProto.EncodingTight);
-        setScaleMode(ScaleType.MATRIX);
+        setScaleMode(ScaleType.FIT_CENTER);
         setInputMode(inputMode);
-        setUseDpadAsArrows(useDpadAsArrows);
+        setUseDpadAsArrows(true);
         setRotateDpad(false);
         setUsePortrait(false);
         setUseLocalCursor(Constants.CURSOR_AUTO);
@@ -137,8 +137,8 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
         setRdpHeight(0);
         setRdpColor(Constants.DEFAULT_RDP_COLOR_MODE);
         setRemoteFx(false);
-        setDesktopBackground(false);
-        setFontSmoothing(false);
+        setDesktopBackground(true);
+        setFontSmoothing(true);
         setDesktopComposition(false);
         setWindowContents(false);
         setMenuAnimation(false);
@@ -377,7 +377,7 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
     }
 
     public synchronized void save(Context c) {
-        Log.d(TAG, "save called");
+        android.util.Log.d(TAG, "save called");
         Database database = new Database(c);
         save(database.getWritableDatabase());
         database.close();
@@ -393,7 +393,7 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
     }
 
     public void loadFromSharedPreferences(Context context) {
-        Log.d(TAG, "loadFromSharedPreferences called");
+        android.util.Log.d(TAG, "loadFromSharedPreferences called");
         SharedPreferences sp = context.getSharedPreferences(Long.toString(get_Id()), Context.MODE_PRIVATE);
         useLastPositionToolbar = sp.getBoolean("useLastPositionToolbar", true);
         useLastPositionToolbarX = sp.getInt("useLastPositionToolbarX", 0);
@@ -402,7 +402,7 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
     }
 
     public void saveToSharedPreferences(Context context) {
-        Log.d(TAG, "saveToSharedPreferences called");
+        android.util.Log.d(TAG, "saveToSharedPreferences called");
         SharedPreferences sp = context.getSharedPreferences(Long.toString(get_Id()), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("useLastPositionToolbar", useLastPositionToolbar);
@@ -413,7 +413,7 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
     }
 
     private synchronized void save(SQLiteDatabase database) {
-        Log.d(TAG, "save called with database");
+        android.util.Log.d(TAG, "save called with database");
         ContentValues values = Gen_getValues();
         values.remove(GEN_FIELD__ID);
         if (!getKeepSshPassword()) {
@@ -541,20 +541,20 @@ public class ConnectionBean extends AbstractConnectionBean implements Comparable
     }
 
     public void saveAndWriteRecent(boolean saveEmpty, Context c) {
-        Log.d(TAG, "saveAndWriteRecent called");
+        android.util.Log.d(TAG, "saveAndWriteRecent called");
         Database database = new Database(c);
         if ((getConnectionType() == Constants.CONN_TYPE_SSH && getSshServer().equals("")
                 || getAddress().equals("")) && !saveEmpty) {
-            Log.d(TAG, "saveAndWriteRecent not saving due to missing data");
+            android.util.Log.d(TAG, "saveAndWriteRecent not saving due to missing data");
         } else {
-            Log.d(TAG, "saveAndWriteRecent saving connection");
+            android.util.Log.d(TAG, "saveAndWriteRecent saving connection");
             saveAndWriteRecent(database);
             saveToSharedPreferences(c);
         }
     }
 
     private void saveAndWriteRecent(Database database) {
-        Log.d(TAG, "saveAndWriteRecent called with database");
+        android.util.Log.d(TAG, "saveAndWriteRecent called with database");
 
         SQLiteDatabase db = database.getWritableDatabase();
         db.beginTransaction();

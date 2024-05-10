@@ -112,7 +112,7 @@ public class ManageCustomCaFragment extends DialogFragment
         super.onAttach(activity);
         try {
             dismissalListener = (OnFragmentDismissedListener) activity;
-            Log.d(TAG, "onAttach: assigning OnFragmentDismissedListener");
+            android.util.Log.e(TAG, "onAttach: assigning OnFragmentDismissedListener");
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement OnFragmentDismissedListener");
         }
@@ -176,7 +176,7 @@ public class ManageCustomCaFragment extends DialogFragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(TAG, "onActivityResult");
+        android.util.Log.i(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case IMPORT_CA_REQUEST:
@@ -206,10 +206,10 @@ public class ManageCustomCaFragment extends DialogFragment
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        Log.d(TAG, "dismiss: sending back data to Activity");
+        android.util.Log.e(TAG, "dismiss: sending back data to Activity");
         // Depending on the value of caPurpose, assign the certs in currentConnection.
         if (caPurpose == ManageCustomCaFragment.TYPE_OVIRT) {
-            Log.d(TAG, "Setting custom oVirt CA");
+            android.util.Log.e(TAG, "Setting custom oVirt CA");
             currentConnection.setOvirtCaData(caCert.getText().toString());
         }
 

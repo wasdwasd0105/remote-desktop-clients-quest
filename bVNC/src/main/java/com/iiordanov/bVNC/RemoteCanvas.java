@@ -331,7 +331,7 @@ public class RemoteCanvas extends AppCompatImageView implements Viewable {
 
         try {
             if (needsLocalCursor()) {
-                initializeSoftCursor();
+                //initializeSoftCursor();
             }
             postDrawableSetter();
             handler.post(setModes);
@@ -707,7 +707,7 @@ public class RemoteCanvas extends AppCompatImageView implements Viewable {
      */
     synchronized public void softCursorMove(int x, int y) {
         if (myDrawable.isNotInitSoftCursor() && connection.getUseLocalCursor() != Constants.CURSOR_FORCE_DISABLE) {
-            initializeSoftCursor();
+            //initializeSoftCursor();
         }
 
         if (!cursorBeingMoved || pointer.isRelativeEvents()) {

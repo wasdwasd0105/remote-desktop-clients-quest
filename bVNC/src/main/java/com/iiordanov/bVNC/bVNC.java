@@ -35,6 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.iiordanov.bVNC.dialogs.AutoXCustomizeDialog;
 import com.iiordanov.bVNC.dialogs.RepeaterDialog;
@@ -83,7 +84,7 @@ public class bVNC extends MainConfiguration {
             @SuppressLint("SetTextI18n")
             @Override
             public void onItemSelected(AdapterView<?> ad, View view, int itemIndex, long id) {
-                Log.d(TAG, "connectionType onItemSelected called");
+                android.util.Log.d(TAG, "connectionType onItemSelected called");
                 selectedConnType = itemIndex;
                 selected.setConnectionType(selectedConnType);
                 selected.save(bVNC.this);
@@ -281,11 +282,12 @@ public class bVNC extends MainConfiguration {
         }
     }
 
-    public void save(View item) {
-        save(R.string.vnc_server_empty);
-    }
-
     public void save(MenuItem item) {
-        save(R.string.vnc_server_empty);
+        Log.d(TAG, "save called");
+        if (ipText.getText().length() != 0 && portText.getText().length() != 0) {
+            saveConnectionAndCloseLayout();
+        } else {
+            Toast.makeText(this, R.string.vnc_server_empty, Toast.LENGTH_LONG).show();
+        }
     }
 }

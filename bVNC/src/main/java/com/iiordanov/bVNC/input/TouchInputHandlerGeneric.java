@@ -102,6 +102,10 @@ abstract class TouchInputHandlerGeneric extends GestureDetector.SimpleOnGestureL
     // Indicates that the next onFling will be disregarded.
     boolean disregardNextOnFling = false;
     // Queue which holds the last two MotionEvents which triggered onScroll
+
+    private long lastScrollEventTime = 0;
+
+
     Queue<Float> distXQueue;
     Queue<Float> distYQueue;
 
@@ -211,30 +215,53 @@ abstract class TouchInputHandlerGeneric extends GestureDetector.SimpleOnGestureL
                 break;
             // If the mouse wheel was scrolled.
             case MotionEvent.ACTION_SCROLL:
-                float vscroll = e.getAxisValue(MotionEvent.AXIS_VSCROLL);
-                float hscroll = e.getAxisValue(MotionEvent.AXIS_HSCROLL);
-                scrollDown = false;
-                scrollUp = false;
-                scrollRight = false;
-                scrollLeft = false;
-                // Determine direction and speed of scrolling.
-                if (vscroll < 0) {
-                    swipeSpeed = (int) (-1 * vscroll);
-                    scrollDown = true;
-                } else if (vscroll > 0) {
-                    swipeSpeed = (int) vscroll;
-                    scrollUp = true;
-                } else if (hscroll < 0) {
-                    swipeSpeed = (int) (-1 * hscroll);
-                    scrollRight = true;
-                } else if (hscroll > 0) {
-                    swipeSpeed = (int) hscroll;
-                    scrollLeft = true;
-                } else
-                    break;
 
-                sendScrollEvents(x, y, meta);
-                used = true;
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastScrollEventTime > baseSwipeTime) {
+
+                    float vscroll = e.getAxisValue(MotionEvent.AXIS_VSCROLL);
+                    float hscroll = e.getAxisValue(MotionEvent.AXIS_HSCROLL);
+                    scrollDown = false;
+                    scrollUp = false;
+                    scrollRight = false;
+                    scrollLeft = false;
+
+                    // Determine direction and speed of scrolling.
+                    if (vscroll < 0) {
+                        swipeSpeed = (int) Math.ceil(-1 * vscroll);
+                        if (swipeSpeed == 0) {
+                            swipeSpeed = -1;
+                        }
+                        scrollDown = true;
+                    } else if (vscroll > 0) {
+                        swipeSpeed = (int) Math.ceil(vscroll);
+                        if (swipeSpeed == 0) {
+                            swipeSpeed = 1;
+                        }
+                        scrollUp = true;
+                    } else if (hscroll < 0) {
+                        swipeSpeed = (int) Math.ceil(-1 * hscroll);
+                        if (swipeSpeed == 0) {
+                            swipeSpeed = -1;
+                        }
+                        scrollRight = true;
+                    } else if (hscroll > 0) {
+                        swipeSpeed = (int) Math.ceil(hscroll);
+                        if (swipeSpeed == 0) {
+                            swipeSpeed = 1;
+                        }
+                        scrollLeft = true;
+                    } else
+                        break;
+
+                    sendScrollEvents(x, y, meta);
+
+                    used = true;
+                    lastScrollEventTime = currentTime;
+
+
+                }
+
                 break;
             // If the mouse was moved OR as reported, some external mice trigger this when a
             // mouse button is pressed as well, so we check bstate here too.
@@ -291,7 +318,7 @@ abstract class TouchInputHandlerGeneric extends GestureDetector.SimpleOnGestureL
             }
             numEvents++;
         }
-        remoteInput.getPointer().releaseButton(x, y, meta);
+         remoteInput.getPointer().releaseButton(x, y, meta);
     }
 
     /*

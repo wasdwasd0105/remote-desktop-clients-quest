@@ -24,6 +24,11 @@ android {
     lintOptions {
         disable "Instantiatable"
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs 'src/main/jniLibs'
+        }
+    }
 }
 
 dependencies {

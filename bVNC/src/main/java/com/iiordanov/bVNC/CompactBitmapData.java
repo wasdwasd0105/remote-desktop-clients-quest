@@ -23,7 +23,6 @@ package com.iiordanov.bVNC;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 
 class CompactBitmapData extends AbstractBitmapData {
     /**
@@ -46,7 +45,7 @@ class CompactBitmapData extends AbstractBitmapData {
             cfg = Bitmap.Config.ARGB_8888;
 
         mbitmap = Bitmap.createBitmap(bitmapwidth, bitmapheight, cfg);
-        Log.i(TAG, "bitmapsize = (" + bitmapwidth + "," + bitmapheight + ")");
+        android.util.Log.i(TAG, "bitmapsize = (" + bitmapwidth + "," + bitmapheight + ")");
 
         if (Constants.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB_MR1) {
             mbitmap.setHasAlpha(false);
@@ -159,7 +158,7 @@ class CompactBitmapData extends AbstractBitmapData {
         framebufferwidth = width;
         framebufferheight = height;
         if (bitmapwidth < framebufferwidth || bitmapheight < framebufferheight) {
-            Log.i(TAG, "One or more bitmap dimensions increased, realloc = ("
+            android.util.Log.i(TAG, "One or more bitmap dimensions increased, realloc = ("
                     + framebufferwidth + "," + framebufferheight + ")");
             dispose();
             // Try to free up some memory.
@@ -172,7 +171,7 @@ class CompactBitmapData extends AbstractBitmapData {
             drawable = createDrawable();
             drawable.startDrawing();
         } else {
-            Log.i(TAG, "Both bitmap dimensions same or smaller, no realloc = ("
+            android.util.Log.i(TAG, "Both bitmap dimensions same or smaller, no realloc = ("
                     + framebufferwidth + "," + framebufferheight + ")");
         }
     }
@@ -196,7 +195,7 @@ class CompactBitmapData extends AbstractBitmapData {
          */
         @Override
         public void draw(Canvas canvas) {
-            //Log.i(TAG, "draw");
+            //android.util.Log.i(TAG, "draw");
             try {
                 synchronized (this) {
                     canvas.drawBitmap(data.mbitmap, 0.0f, 0.0f, _defaultPaint);

@@ -23,7 +23,6 @@
 //
 package com.iiordanov.bVNC;
 
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -50,6 +49,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -90,7 +90,6 @@ import com.undatech.opaque.MessageDialogs;
 import com.undatech.opaque.RemoteClientLibConstants;
 import com.undatech.opaque.dialogs.SelectTextElementFragment;
 import com.undatech.opaque.util.FileUtils;
-import com.undatech.opaque.util.GeneralUtils;
 import com.undatech.opaque.util.OnTouchViewMover;
 import com.undatech.opaque.util.RemoteToolbar;
 import com.undatech.remoteClientUi.R;
@@ -107,6 +106,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+
 
 @SuppressLint("ClickableViewAccessibility")
 public class RemoteCanvasActivity extends AppCompatActivity implements
@@ -156,7 +156,6 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
     View rootView;
     ActionBarHider actionBarHider = new ActionBarHider();
     ActionBarShower actionBarShower = new ActionBarShower();
-    KeyboardIconShower keyboardIconShower = new KeyboardIconShower();
     private Vibrator myVibrator;
     private RemoteCanvas canvas;
     private RemoteConnection remoteConnection;
@@ -165,11 +164,6 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
     private TouchInputHandler[] inputModeHandlers;
     private Connection connection;
     public RemoteClientsInputListener inputListener;
-    private ImageButton keyboardIconForAndroidTv;
-    float keyboardIconForAndroidTvX = Float.MAX_VALUE;
-
-    OnTouchViewMover toolbarMover;
-    ActionBarPositionSaver toolbarPositionSaver = new ActionBarPositionSaver();
 
     /**
      * This runnable enables immersive mode.
@@ -229,7 +223,6 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
     private void correctAfterRotation() throws Exception {
         Log.d(TAG, "correctAfterRotation");
         canvas.waitUntilInflated();
-
         // Its quite common to see NullPointerExceptions here when this function is called
         // at the point of disconnection. Hence, we catch and ignore the error.
         float oldScale = canvas.canvasZoomer.getZoomFactor();
@@ -289,7 +282,6 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         setContentView(R.layout.canvas);
 
         canvas = findViewById(R.id.canvas);
-        keyboardIconForAndroidTv = findViewById(R.id.keyboardIconForAndroidTv);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             canvas.setDefaultFocusHighlightEnabled(false);
@@ -340,7 +332,7 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
             continueConnecting();
         }
 
-        Log.d(TAG, "OnCreate complete");
+        android.util.Log.d(TAG, "OnCreate complete");
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -428,8 +420,22 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
                 startActivity(Intent);
             }
             Utils.justFinish(this);
+            goToConnectionGridActivity();
+
         }
     }
+
+    private void goToConnectionGridActivity(){
+        Intent intent = new Intent(getApplicationContext(), com.undatech.opaque.ConnectionGridActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                startActivity(intent);
+            }
+        }, 650);
+    }
+
 
     @SuppressLint("SourceLockedOrientationActivity")
     private Connection getOpaqueConnection(String vvFileName) {
@@ -437,7 +443,7 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         Intent i = getIntent();
         if (vvFileName == null) {
-            Log.d(TAG, "Initializing session from connection settings.");
+            android.util.Log.d(TAG, "Initializing session from connection settings.");
             connection = (ConnectionSettings) i.getSerializableExtra(Constants.opaqueConnectionSettingsClassPath);
         } else {
             connection = new ConnectionSettings(RemoteClientLibConstants.DEFAULT_SETTINGS_FILE);
@@ -448,7 +454,7 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
 
     @SuppressLint("RtlHardcoded")
     public void continueConnecting() {
-        Log.d(TAG, "continueConnecting");
+        android.util.Log.d(TAG, "continueConnecting");
         // Initialize and define actions for on-screen keys.
         initializeOnScreenKeys();
 
@@ -484,16 +490,16 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
     }
 
     void relayoutViews(View rootView) {
-        Log.d(TAG, "onGlobalLayout: start");
+        android.util.Log.d(TAG, "onGlobalLayout: start");
         if (canvas == null) {
-            Log.d(TAG, "onGlobalLayout: canvas null, returning");
+            android.util.Log.d(TAG, "onGlobalLayout: canvas null, returning");
             return;
         }
 
         Rect r = new Rect();
 
         rootView.getWindowVisibleDisplayFrame(r);
-        Log.d(TAG, "onGlobalLayout: getWindowVisibleDisplayFrame: " + r);
+        android.util.Log.d(TAG, "onGlobalLayout: getWindowVisibleDisplayFrame: " + r);
 
         // To avoid setting the visible height to a wrong value after an screen unlock event
         // (when r.bottom holds the width of the screen rather than the height due to a rotation)
@@ -505,14 +511,14 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         getWindow().getDecorView().getWindowVisibleDisplayFrame(re);
         if (r.top == 0 || re.top > 0) {
             if (canvas.getDrawable() != null) {
-                Log.d(TAG, "onGlobalLayout: Setting VisibleDesktopHeight to: " + (r.bottom - re.top));
+                android.util.Log.d(TAG, "onGlobalLayout: Setting VisibleDesktopHeight to: " + (r.bottom - re.top));
                 canvas.setVisibleDesktopHeight(r.bottom - re.top);
                 canvas.relativePan(0, 0);
             } else {
-                Log.d(TAG, "onGlobalLayout: canvas.myDrawable is null");
+                android.util.Log.d(TAG, "onGlobalLayout: canvas.myDrawable is null");
             }
         } else {
-            Log.d(TAG, "onGlobalLayout: Found r.top to be non-zero");
+            android.util.Log.d(TAG, "onGlobalLayout: Found r.top to be non-zero");
         }
 
         // Enable/show the toolbar if the keyboard is gone, and disable/hide otherwise.
@@ -520,43 +526,69 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         // Use the visible display frame of the decor view to compute notch dimensions.
         int rootViewHeight = rootView.getHeight();
 
-        if (keyboardIconForAndroidTvX == Float.MAX_VALUE) {
-            keyboardIconForAndroidTvX = keyboardIconForAndroidTv.getX();
-        }
-
         int layoutKeysBottom = layoutKeys.getBottom();
         int toolbarBottom = toolbar.getBottom();
         int rootViewBottom = layoutKeys.getRootView().getBottom();
         int diffArrowKeysPosition = r.right - re.left - layoutArrowKeys.getRight();
         int diffLayoutKeysPosition = r.bottom - re.top - layoutKeysBottom;
         int diffToolbarPosition = r.bottom - re.top - toolbarBottom - r.bottom / 2;
-        int standardToolbarPositionX = r.right - toolbar.getWidth();
-        int standardToolbarPositionY = r.bottom - re.top - toolbar.getHeight() - r.bottom / 2;
-        Log.d(TAG, "onGlobalLayout: before: r.bottom: " + r.bottom +
+        int diffToolbarPositionRightAbsolute = r.right - toolbar.getWidth();
+        int diffToolbarPositionTopAbsolute = r.bottom - re.top - toolbar.getHeight() - r.bottom / 2;
+        android.util.Log.d(TAG, "onGlobalLayout: before: r.bottom: " + r.bottom +
                 " rootViewHeight: " + rootViewHeight + " re.top: " + re.top + " re.bottom: " + re.bottom +
                 " layoutKeysBottom: " + layoutKeysBottom + " rootViewBottom: " + rootViewBottom + " toolbarBottom: " + toolbarBottom +
                 " diffLayoutKeysPosition: " + diffLayoutKeysPosition + " diffToolbarPosition: " + diffToolbarPosition);
 
+        boolean softKeyboardPositionChanged = false;
         if (r.bottom > rootViewHeight * 0.81) {
-            Log.d(TAG, "onGlobalLayout: Less than 19% of screen is covered");
-            String direction = "down";
+            android.util.Log.d(TAG, "onGlobalLayout: Less than 19% of screen is covered");
+            if (softKeyboardUp) {
+                softKeyboardPositionChanged = true;
+            }
+            softKeyboardUp = false;
+
             // Soft Kbd gone, shift the meta keys and arrows down.
             if (layoutKeys != null) {
-                shiftLayoutArrowAndToolbar(r, diffArrowKeysPosition, diffLayoutKeysPosition, diffToolbarPosition, standardToolbarPositionX, standardToolbarPositionY, direction);
-                if (softKeyboardUp) {
-                    Log.d(TAG, "onGlobalLayout: softKeyboardUp was true, but keyboard is now hidden. Hiding on-screen buttons");
+                android.util.Log.d(TAG, "onGlobalLayout: shifting on-screen buttons down by: " + diffLayoutKeysPosition);
+                layoutKeys.offsetTopAndBottom(diffLayoutKeysPosition);
+                if (!connection.getUseLastPositionToolbar() || !connection.getUseLastPositionToolbarMoved()) {
+                    toolbar.offsetTopAndBottom(diffToolbarPosition);
+                } else {
+                    toolbar.setPositionToMakeVisible(connection.getUseLastPositionToolbarX(),
+                            connection.getUseLastPositionToolbarY(),
+                            r.right,
+                            r.bottom,
+                            diffToolbarPositionRightAbsolute,
+                            diffToolbarPositionTopAbsolute);
+                }
+                android.util.Log.d(TAG, "onGlobalLayout: shifting arrow keys by: " + diffArrowKeysPosition);
+                layoutArrowKeys.offsetLeftAndRight(diffArrowKeysPosition);
+                if (softKeyboardPositionChanged) {
+                    android.util.Log.d(TAG, "onGlobalLayout: hiding on-screen buttons");
                     setExtraKeysVisibility(View.GONE, false);
                     canvas.invalidate();
                 }
             }
-            softKeyboardUp = false;
         } else {
-            Log.d(TAG, "onGlobalLayout: More than 19% of screen is covered");
+            android.util.Log.d(TAG, "onGlobalLayout: More than 19% of screen is covered");
             softKeyboardUp = true;
-            String direction = "up";
+
             //  Soft Kbd up, shift the meta keys and arrows up.
             if (layoutKeys != null) {
-                shiftLayoutArrowAndToolbar(r, diffArrowKeysPosition, diffLayoutKeysPosition, diffToolbarPosition, standardToolbarPositionX, standardToolbarPositionY, direction);
+                Log.d(TAG, "onGlobalLayout: shifting on-screen buttons up by: " + diffLayoutKeysPosition);
+                layoutKeys.offsetTopAndBottom(diffLayoutKeysPosition);
+                if (!connection.getUseLastPositionToolbar() || !connection.getUseLastPositionToolbarMoved()) {
+                    toolbar.offsetTopAndBottom(diffToolbarPosition);
+                } else {
+                    toolbar.setPositionToMakeVisible(connection.getUseLastPositionToolbarX(),
+                            connection.getUseLastPositionToolbarY(),
+                            r.right,
+                            r.bottom,
+                            diffToolbarPositionRightAbsolute,
+                            diffToolbarPositionTopAbsolute);
+                }
+                Log.d(TAG, "onGlobalLayout: shifting arrow keys by: " + diffArrowKeysPosition);
+                layoutArrowKeys.offsetLeftAndRight(diffArrowKeysPosition);
                 if (extraKeysHidden) {
                     Log.d(TAG, "onGlobalLayout: on-screen buttons should be hidden");
                     setExtraKeysVisibility(View.GONE, false);
@@ -571,34 +603,10 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
             layoutKeysBottom = layoutKeys.getBottom();
             rootViewBottom = layoutKeys.getRootView().getBottom();
         }
-        Log.d(TAG, "onGlobalLayout: after: r.bottom: " + r.bottom +
+        android.util.Log.d(TAG, "onGlobalLayout: after: r.bottom: " + r.bottom +
                 " rootViewHeight: " + rootViewHeight + " re.top: " + re.top + " re.bottom: " + re.bottom +
                 " layoutKeysBottom: " + layoutKeysBottom + " rootViewBottom: " + rootViewBottom + " toolbarBottom: " + toolbarBottom +
                 " diffLayoutKeysPosition: " + diffLayoutKeysPosition + " diffToolbarPosition: " + diffToolbarPosition);
-    }
-
-    private void shiftLayoutArrowAndToolbar(Rect r, int diffArrowKeysPosition, int diffLayoutKeysPosition, int diffToolbarPosition, int standardToolbarPositionX, int standardToolbarPositionY, String direction) {
-        Log.d(TAG, String.format("onGlobalLayout: shifting on-screen buttons %s by: %d", direction, diffLayoutKeysPosition));
-        layoutKeys.offsetTopAndBottom(diffLayoutKeysPosition);
-        offsetOrRestoreSavedToolbarPosition(r, diffToolbarPosition, standardToolbarPositionX, standardToolbarPositionY);
-        Log.d(TAG, "onGlobalLayout: shifting arrow keys by: " + diffArrowKeysPosition);
-        layoutArrowKeys.offsetLeftAndRight(diffArrowKeysPosition);
-    }
-
-    private void offsetOrRestoreSavedToolbarPosition(Rect r, int diffToolbarPosition, int standardPositionX, int standardPositionY) {
-        boolean useLastPosition = connection.getUseLastPositionToolbar();
-        boolean toolbarMoved = connection.getUseLastPositionToolbarMoved();
-        if (!useLastPosition || !toolbarMoved) {
-            toolbar.offsetTopAndBottom(diffToolbarPosition);
-        } else {
-            toolbar.setPositionToMakeVisible(
-                    connection.getUseLastPositionToolbarX(),
-                    connection.getUseLastPositionToolbarY(),
-                    r.right,
-                    r.bottom,
-                    standardPositionX,
-                    standardPositionY);
-        }
     }
 
     /**
@@ -613,10 +621,10 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         final String tempVvFile = getFilesDir() + "/tempfile.vv";
         int msgId = 0;
 
-        Log.d(TAG, "Got intent: " + i);
+        android.util.Log.d(TAG, "Got intent: " + i);
 
         if (data != null) {
-            Log.d(TAG, "Got data: " + data);
+            android.util.Log.d(TAG, "Got data: " + data);
             final String dataString = data.toString();
             if (dataString.startsWith("http")) {
                 android.util.Log.d(TAG, "Intent is with http scheme.");
@@ -658,11 +666,11 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
                     vvFileName = tempVvFile;
                 }
             } else if (dataString.startsWith("file")) {
-                Log.d(TAG, "Intent is with file scheme.");
+                android.util.Log.d(TAG, "Intent is with file scheme.");
                 msgId = R.string.error_failed_to_obtain_vv_file;
                 vvFileName = data.getPath();
             } else if (dataString.startsWith("content")) {
-                Log.d(TAG, "Intent is with content scheme.");
+                android.util.Log.d(TAG, "Intent is with content scheme.");
                 msgId = R.string.error_failed_to_obtain_vv_content;
                 FileUtils.deleteFile(tempVvFile);
 
@@ -670,10 +678,10 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
                     FileUtils.outputToFile(getContentResolver().openInputStream(data), new File(tempVvFile));
                     vvFileName = tempVvFile;
                 } catch (IOException e) {
-                    Log.e(TAG, "Could not write temp file: IOException.");
+                    android.util.Log.e(TAG, "Could not write temp file: IOException.");
                     e.printStackTrace();
                 } catch (SecurityException e) {
-                    Log.e(TAG, "Could not write temp file: SecurityException.");
+                    android.util.Log.e(TAG, "Could not write temp file: SecurityException.");
                     e.printStackTrace();
                 }
             }
@@ -1146,7 +1154,9 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // Make sure extra keys stow item is gone if extra keys are disabled and vice versa.
-        setKeyStowDrawableAndVisibility(menu.findItem(R.id.extraKeysToggle));
+
+        //removed for quest
+        //setKeyStowDrawableAndVisibility(menu.findItem(R.id.extraKeysToggle));
         menu.findItem(R.id.itemColorMode).setVisible(remoteConnection.canUpdateColorModelConnected());
         return true;
     }
@@ -1185,13 +1195,13 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
             else
                 menu.findItem(R.id.itemExtraKeys).setTitle(R.string.extra_keys_enable);
 
-            toolbarMover = new OnTouchViewMover(toolbar, handler, toolbarPositionSaver, actionBarHider, hideToolbarDelay);
+            OnTouchListener moveListener = new OnTouchViewMover(toolbar, handler, actionBarHider, hideToolbarDelay);
             ImageButton moveButton = new ImageButton(this);
 
             moveButton.setBackgroundResource(R.drawable.ic_all_out_gray_36dp);
             MenuItem moveToolbar = menu.findItem(R.id.moveToolbar);
             moveToolbar.setActionView(moveButton);
-            moveButton.setOnTouchListener(toolbarMover);
+            moveButton.setOnTouchListener(moveListener);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -1319,7 +1329,9 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
                     canvas.absoluteYPosition + canvas.getVisibleDesktopHeight() / 2);
             return true;
         } else if (itemId == R.id.itemDisconnect) {
-            disconnectAndFinishActivity();
+            remoteConnection.closeConnection();
+            Utils.justFinish(this);
+            goToConnectionGridActivity();
             return true;
         } else if (itemId == R.id.itemEnterText) {
             showDialog(R.layout.entertext);
@@ -1357,11 +1369,6 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    private void disconnectAndFinishActivity() {
-        remoteConnection.closeConnection();
-        Utils.justFinish(this);
-    }
-
     public boolean setInputMode(int id) {
         TouchInputHandler input = getInputHandlerById(id);
         if (input != null) {
@@ -1387,7 +1394,6 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         touchInputHandler = input;
         inputListener = new RemoteClientsInputListener(
                 this,
-                remoteConnection,
                 remoteConnection,
                 touchInputHandler,
                 this::resetOnScreenKeys,
@@ -1532,13 +1538,6 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         handler.postAtTime(actionBarHider, SystemClock.uptimeMillis() + hideToolbarDelay);
     }
 
-    public void showKeyboardIcon() {
-        handler.removeCallbacks(keyboardIconShower);
-        handler.postAtTime(keyboardIconShower, SystemClock.uptimeMillis() + 50);
-        handler.removeCallbacks(actionBarHider);
-        handler.postAtTime(actionBarHider, SystemClock.uptimeMillis() + hideToolbarDelay);
-    }
-
     @Override
     public void onTextSelected(String selectedString) {
         android.util.Log.i(TAG, "onTextSelected called with selectedString: " + selectedString);
@@ -1603,9 +1602,6 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        if (GeneralUtils.isTv(this)) {
-            disconnectAndFinishActivity();
-        }
         if (inputListener != null) {
             inputListener.onKey(canvas, KeyEvent.KEYCODE_BACK, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
         }
@@ -1615,35 +1611,18 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         return remoteConnection;
     }
 
-    private class ActionBarPositionSaver implements Runnable {
-        public void run() {
-            connection.setUseLastPositionToolbarX(toolbarMover.getLastX());
-            connection.setUseLastPositionToolbarY(toolbarMover.getLastY());
-            connection.setUseLastPositionToolbarMoved(true);
-            connection.save(RemoteCanvasActivity.this);
-        }
-    }
-
     private class ActionBarHider implements Runnable {
         public void run() {
-            if (GeneralUtils.isTv(RemoteCanvasActivity.this)) {
-                keyboardIconForAndroidTv.setVisibility(View.GONE);
-            } else {
-                ActionBar actionBar = getSupportActionBar();
-                if (actionBar != null) {
-                    Log.d(TAG, "ActionBarHider: Hiding ActionBar");
-                    actionBar.hide();
-                }
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                Log.d(TAG, "ActionBarHider: Hiding ActionBar");
+                actionBar.hide();
             }
         }
     }
 
     private class ActionBarShower implements Runnable {
         public void run() {
-            showActionBar();
-        }
-
-        private void showActionBar() {
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 Log.d(TAG, "ActionBarShower: Showing ActionBar");
@@ -1652,20 +1631,5 @@ public class RemoteCanvasActivity extends AppCompatActivity implements
         }
     }
 
-    private class KeyboardIconShower implements Runnable {
-        public void run() {
-            if (GeneralUtils.isTv(RemoteCanvasActivity.this)) {
-                animateKeyboardIconForAndroidTv();
-            }
-        }
 
-        private void animateKeyboardIconForAndroidTv() {
-            keyboardIconForAndroidTv.setVisibility(View.VISIBLE);
-            Log.d(TAG, "ActionBarHider: keyboardIconForAndroidTv X position to: " + keyboardIconForAndroidTvX);
-            keyboardIconForAndroidTv.setX(keyboardIconForAndroidTvX);
-            ObjectAnimator animation = ObjectAnimator.ofFloat(keyboardIconForAndroidTv, "translationX", -100f);
-            animation.setDuration(1000);
-            animation.start();
-        }
-    }
 }

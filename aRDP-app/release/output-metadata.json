@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.MANGOFESTIVAL.vrRDP",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 10005290,
+      "versionName": "v1.0.0",
+      "outputFile": "aRDP-app-release.apk"
+    }
+  ],
+  "elementType": "File"
+}

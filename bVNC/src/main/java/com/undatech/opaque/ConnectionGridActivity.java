@@ -47,6 +47,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -78,6 +79,8 @@ import com.undatech.remoteClientUi.R;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ConnectionGridActivity extends FragmentActivity implements GetTextFragment.OnFragmentDismissedListener {
     private static String TAG = "ConnectionGridActivity";
@@ -91,13 +94,18 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
     private EditText search;
     private boolean togglingMasterPassword = false;
     private AppCompatImageButton addNewConnection = null;
-    private AppCompatImageButton editDefaultSettings = null;
 
     private RateOrShareFragment rateOrShareFragment = new RateOrShareFragment();
+
+    private String[] VrScreenSizeOption = {"Small", "Large 16:9", "Huge 16:9", "Large 21:9"};
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences VRprefs = getSharedPreferences("vrScreenSettings", MODE_PRIVATE);
 
         appContext = getApplicationContext();
         setContentView(R.layout.grid_view_activity);
@@ -163,10 +171,58 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
         FileUtils.logFilesInPrivateStorage(this);
         FileUtils.deletePrivateFileIfExisting(this, ".config/freerdp/licenses");
         addNewConnection = findViewById(R.id.addNewConnection);
-        addNewConnection.setOnClickListener(v -> addNewConnection());
-        editDefaultSettings = findViewById(R.id.editDefaultSettings);
-        editDefaultSettings.setOnClickListener(v -> editDefaultSettings());
+        addNewConnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNewConnection();
+            }
+        });
+
+        int currentScreenSize = VRprefs.getInt("ScreenSizeOption", 0);
+
+        Button buttonScreenSize = findViewById(R.id.buttonScreenSize);
+
+        buttonScreenSize.setText("Screen Size: " + VrScreenSizeOption[currentScreenSize]);
+        buttonScreenSize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showScreenSizeDialog();
+            }
+        });
     }
+
+
+    private void showScreenSizeDialog() {
+
+        SharedPreferences VRprefs = getSharedPreferences("vrScreenSettings", MODE_PRIVATE);
+
+
+        int savedItem = VRprefs.getInt("ScreenSizeOption", 0);
+        final int[] userSelection = {0};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose Screen Size")
+                .setSingleChoiceItems(VrScreenSizeOption, savedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        userSelection[0] = which;
+                    }
+                })
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = VRprefs.edit();
+                        editor.putInt("ScreenSizeOption", userSelection[0]);
+                        editor.apply();
+                        Button buttonScreenSize = findViewById(R.id.buttonScreenSize);
+                        buttonScreenSize.setText("Screen Size: " + VrScreenSizeOption[userSelection[0]]);
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
     private ConnectionLoader getConnectionLoader(Context context) {
         boolean connectionsInSharedPrefs = Utils.isOpaque(context);
@@ -186,21 +242,40 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
 
     private void launchConnection(View v) {
         Utils.hideKeyboard(this, getCurrentFocus());
-        Log.i(TAG, "Launch Connection");
+        android.util.Log.i(TAG, "Launch Connection");
 
         ActivityManager.MemoryInfo info = Utils.getMemoryInfo(this);
         if (info.lowMemory)
             System.gc();
 
         String runtimeId = (String) ((TextView) v.findViewById(R.id.grid_item_id)).getText();
+
+        SharedPreferences VRprefs = getSharedPreferences("vrScreenSettings", MODE_PRIVATE);
+
+        int currentScreenSize = VRprefs.getInt("ScreenSizeOption", 0);
+
+        String[] vrWindowMode = {"Small", "Large16_9", "Huge16_9", "Large21_9"};
+
         Intent intent = new IntentHelper().getIntent(
                 getConnectionLoader(this),
-                runtimeId,
+                runtimeId, vrWindowMode[currentScreenSize],
                 appContext,
                 this
         );
         try {
-            startActivity(intent);
+            // need to add finishAllActivities here
+            finish();
+
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    startActivity(intent);
+                    //startIntent(launcherActivity, intent);
+                }
+            }, 650);
+
+            //startActivity(intent);
+
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Error launching connection: " + e);
             Toast.makeText(this, R.string.no_application_to_handle_vpn, Toast.LENGTH_LONG).show();
@@ -209,7 +284,7 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
     }
 
     private void editConnection(View v) {
-        Log.d(TAG, "Modify Connection");
+        android.util.Log.d(TAG, "Modify Connection");
         String runtimeId = (String) ((TextView) v.findViewById(R.id.grid_item_id)).getText();
         ConnectionLoader connectionLoader = getConnectionLoader(this);
         Connection conn = connectionLoader.getConnectionsById().get(runtimeId);
@@ -226,7 +301,7 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
     }
 
     private void deleteConnection(View v) {
-        Log.d(TAG, "Delete Connection");
+        android.util.Log.d(TAG, "Delete Connection");
         String runtimeId = (String) ((TextView) v.findViewById(R.id.grid_item_id)).getText();
         String gridItemText = (String) ((TextView) v.findViewById(R.id.grid_item_text)).getText();
         Utils.showYesNoPrompt(this, getString(R.string.delete_connection) + "?", getString(R.string.delete_connection) + " " + gridItemText + " ?",
@@ -249,7 +324,7 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
                                         newListOfConnections += " " + connection;
                                     }
                                 }
-                                Log.d(TAG, "Deleted connection, current list: " + newListOfConnections);
+                                android.util.Log.d(TAG, "Deleted connection, current list: " + newListOfConnections);
                                 Editor editor = sp.edit();
                                 editor.putString("connections", newListOfConnections.trim());
                                 editor.apply();
@@ -345,11 +420,7 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
      * @param menuItem
      */
     public void editDefaultSettings(MenuItem menuItem) {
-        editDefaultSettings();
-    }
-
-    public void editDefaultSettings() {
-        Log.d(TAG, "editDefaultSettings selected.");
+        android.util.Log.d(TAG, "editDefaultSettings selected.");
         if (Utils.isOpaque(this)) {
             Intent intent = new Intent(ConnectionGridActivity.this, GeneralUtils.getClassByName("com.undatech.opaque.AdvancedSettingsActivity"));
             ConnectionSettings defaultConnection = new ConnectionSettings(RemoteClientLibConstants.DEFAULT_SETTINGS_FILE);
@@ -369,7 +440,7 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
      * @param menuItem
      */
     public void rateOrShare(MenuItem menuItem) {
-        Log.d(TAG, "rateOrShare selected.");
+        android.util.Log.d(TAG, "rateOrShare selected.");
         if (!rateOrShareFragment.isVisible()) {
             rateOrShareFragment.show(fragmentManager, "");
         }
@@ -388,7 +459,7 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(TAG, "onActivityResult");
+        android.util.Log.i(TAG, "onActivityResult");
 
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
@@ -398,7 +469,7 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
                     ConnectionSettings defaultSettings = (ConnectionSettings) b.get(Constants.opaqueConnectionSettingsClassPath);
                     defaultSettings.saveToSharedPreferences(this);
                 } else {
-                    Log.i(TAG, "Error during AdvancedSettingsActivity.");
+                    android.util.Log.i(TAG, "Error during AdvancedSettingsActivity.");
                 }
                 break;
             case RemoteClientLibConstants.IMPORT_SETTINGS_REQUEST_CODE:
@@ -421,10 +492,10 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
                         }
                         recreate();
                     } else {
-                        Log.e(TAG, "File uri not found, not importing settings");
+                        android.util.Log.e(TAG, "File uri not found, not importing settings");
                     }
                 } else {
-                    Log.e(TAG, "Error while selecting file to import settings from");
+                    android.util.Log.e(TAG, "Error while selecting file to import settings from");
                 }
                 break;
             case RemoteClientLibConstants.EXPORT_SETTINGS_REQUEST_CODE:
@@ -440,10 +511,10 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
                             Utils.exportSettingsToXml(out, database.getReadableDatabase());
                         }
                     } else {
-                        Log.e(TAG, "File uri not found, not exporting settings");
+                        android.util.Log.e(TAG, "File uri not found, not exporting settings");
                     }
                 } else {
-                    Log.e(TAG, "Error while selecting file to export settings to");
+                    android.util.Log.e(TAG, "Error while selecting file to export settings to");
                 }
                 break;
         }
@@ -454,7 +525,7 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
      */
     @Override
     public boolean onMenuOpened(int featureId, Menu menu) {
-        Log.d(TAG, "onMenuOpened");
+        android.util.Log.d(TAG, "onMenuOpened");
         try {
             updateInputMenu(menu.findItem(R.id.itemInputMode).getSubMenu());
             MenuItem itemMasterPassword = menu.findItem(R.id.itemMasterPassword);
@@ -474,11 +545,11 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
         }
         String defaultInputHandlerId = Utils.querySharedPreferenceString(
                 this, Constants.defaultInputMethodTag, TouchInputHandlerDirectSwipePan.ID);
-        Log.d(TAG, "Default Input Mode Item: " + defaultInputHandlerId);
+        android.util.Log.d(TAG, "Default Input Mode Item: " + defaultInputHandlerId);
 
         try {
             for (MenuItem item : inputModeMenuItems) {
-                Log.d(TAG, "Input Mode Item: " +
+                android.util.Log.d(TAG, "Input Mode Item: " +
                         RemoteCanvasActivity.inputModeMap.get(item.getItemId()));
 
                 if (defaultInputHandlerId.equals(RemoteCanvasActivity.inputModeMap.get(item.getItemId()))) {
@@ -578,38 +649,38 @@ public class ConnectionGridActivity extends FragmentActivity implements GetTextF
     }
 
     public void showSupportForum(View item) {
-        startUriIntent(this, "https://groups.google.com/forum/#!forum/bvnc-ardp-aspice-opaque-remote-desktop-clients");
+        startUriIntent(this, "https://discord.gg/YCXfgJzYqh");
     }
 
     public void emailUs(View item) {
-        startUriIntent(this, "mailto:support@morpheusly.com");
+        startUriIntent(this, "https://www.mangotun.com/contact");
     }
 
-    public void reportBug(View item) {
-        startUriIntent(this, "https://github.com/iiordanov/remote-desktop-clients/issues");
-    }
+//    public void reportBug(View item) {
+//        startUriIntent(this, "https://github.com/iiordanov/remote-desktop-clients/issues");
+//    }
 
-    public void rateApp(View item) {
-        Log.d(TAG, "rateApp: Showing rate app functionality");
-        Utils.showRateAppDialog(this);
-    }
+//    public void rateApp(View item) {
+//        Log.d(TAG, "rateApp: Showing rate app functionality");
+//        Utils.showRateAppDialog(this);
+//    }
 
-    public void shareApp(View item) {
-        Log.d(TAG, "shareApp: Copying app link to clipboard");
-        String url = Utils.getDonationPackageUrl(this);
-        setClipboard(this, url);
-        Toast.makeText(appContext, R.string.share_app_toast, Toast.LENGTH_LONG).show();
-    }
+//    public void shareApp(View item) {
+//        Log.d(TAG, "shareApp: Copying app link to clipboard");
+//        String url = Utils.getDonationPackageUrl(this);
+//        setClipboard(this, url);
+//        Toast.makeText(appContext, R.string.share_app_toast, Toast.LENGTH_LONG).show();
+//    }
 
-    public void donateToProject(View item) {
-        startUriIntent(this, Utils.getDonationPackageLink(this));
-    }
+//    public void donateToProject(View item) {
+//        startUriIntent(this, Utils.getDonationPackageLink(this));
+//    }
 
-    public void moreApps(View item) {
-        startUriIntent(this, "market://search?q=pub:\"Iordan Iordanov (Undatech)\"");
-    }
-
-    public void previousVersions(View item) {
-        startUriIntent(this, "https://github.com/iiordanov/remote-desktop-clients/releases");
-    }
+//    public void moreApps(View item) {
+//        startUriIntent(this, "market://search?q=pub:\"Iordan Iordanov (Undatech)\"");
+//    }
+//
+//    public void previousVersions(View item) {
+//        startUriIntent(this, "https://github.com/iiordanov/remote-desktop-clients/releases");
+//    }
 }

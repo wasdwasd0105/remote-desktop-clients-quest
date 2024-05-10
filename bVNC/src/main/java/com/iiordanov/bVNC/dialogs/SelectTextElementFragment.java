@@ -24,7 +24,6 @@ import android.content.DialogInterface;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.util.Xml;
 import android.view.LayoutInflater;
@@ -52,7 +51,7 @@ public class SelectTextElementFragment extends DialogFragment {
     }
 
     public static SelectTextElementFragment newInstance(String title, ArrayList<String> strings, OnFragmentDismissedListener dismissalListener) {
-        Log.d(TAG, "newInstance called");
+        android.util.Log.e(TAG, "newInstance called");
         SelectTextElementFragment f = new SelectTextElementFragment();
         f.setOnFragmentDismissedListener(dismissalListener);
 
@@ -72,7 +71,7 @@ public class SelectTextElementFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate called");
+        android.util.Log.e(TAG, "onCreate called");
 
         strings = getArguments().getStringArrayList("strings");
         title = getArguments().getString("title");
@@ -80,7 +79,7 @@ public class SelectTextElementFragment extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView called");
+        android.util.Log.e(TAG, "onCreateView called");
 
         XmlResourceParser parser = getResources().getLayout(R.layout.textelement);
         AttributeSet attributes = Xml.asAttributeSet(parser);
@@ -93,7 +92,7 @@ public class SelectTextElementFragment extends DialogFragment {
         verticalLayout = (LinearLayout) v.findViewById(R.id.verticalLayout);
         ListIterator<String> iter = strings.listIterator();
         while (iter.hasNext()) {
-            Log.d(TAG, "Adding element to dialog");
+            android.util.Log.e(TAG, "Adding element to dialog");
             String string = iter.next();
             TextView element = new TextView(v.getContext(), attributes);
             element.setText(string);
@@ -114,7 +113,7 @@ public class SelectTextElementFragment extends DialogFragment {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        Log.d(TAG, "dismiss: sending back data to Activity");
+        android.util.Log.e(TAG, "dismiss: sending back data to Activity");
         dismissalListener.onTextSelected(selected);
     }
 

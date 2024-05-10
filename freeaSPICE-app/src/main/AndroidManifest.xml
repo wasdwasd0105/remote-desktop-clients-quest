@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.iiordanov.freeaSPICE"
     android:installLocation="auto"
-    android:versionCode="115350"
-    android:versionName="v5.3.5">
+    android:versionCode="115290"
+    android:versionName="v5.2.9">
 
     <uses-permission tools:node="removeAll" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -26,8 +26,8 @@
     <application
         android:name="com.iiordanov.bVNC.App"
         android:allowBackup="false"
-        android:banner="@mipmap/banner_aspice"
-        android:icon="@mipmap/icon_aspice"
+        android:banner="@drawable/banner_aspice"
+        android:icon="@drawable/aspice_icon"
         android:label="@string/freeaspice_app_name"
         android:theme="@android:style/Theme.DeviceDefault"
         tools:replace="android:label,android:theme">

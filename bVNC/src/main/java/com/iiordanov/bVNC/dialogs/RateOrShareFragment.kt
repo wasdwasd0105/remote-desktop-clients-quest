@@ -38,7 +38,7 @@ class RateOrShareFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate called")
+        Log.e(TAG, "onCreate called")
     }
 
     override fun onCreateView(
@@ -46,12 +46,12 @@ class RateOrShareFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d(TAG, "onCreateView called")
+        Log.e(TAG, "onCreateView called")
         dialog?.setTitle(getString(R.string.action_rate_or_share_app))
         val v = inflater.inflate(R.layout.rateorshare, container, false)
         layout = v.findViewById<View>(R.id.layout) as TableLayout
-        donationButton = v.findViewById(R.id.buttonDonate);
-        previousVersionsButton = v.findViewById(R.id.buttonPreviousVersions);
+        //donationButton = v.findViewById(R.id.buttonDonate);
+        //previousVersionsButton = v.findViewById(R.id.buttonPreviousVersions);
         if (!Utils.isFree(activity)) {
             donationButton?.visibility = View.GONE
         }

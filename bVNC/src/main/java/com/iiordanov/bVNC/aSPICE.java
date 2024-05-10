@@ -212,26 +212,18 @@ public class aSPICE extends MainConfiguration {
         selected.setEnableSound(b.isChecked());
     }
 
-    public void save(View item) {
-        save(R.string.spice_server_empty);
-    }
-
     public void save(MenuItem item) {
-        save(R.string.spice_server_empty);
-    }
-
-    public void save(int resource) {
         if (ipText.getText().length() != 0
                 && (portText.getText().length() != 0 || tlsPort.getText().length() != 0)) {
             saveConnectionAndCloseLayout();
         } else {
-            Toast.makeText(this, resource, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.spice_server_empty, Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(TAG, "onActivityResult");
+        android.util.Log.i(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ImportTlsCaDialog.IMPORT_CA_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {

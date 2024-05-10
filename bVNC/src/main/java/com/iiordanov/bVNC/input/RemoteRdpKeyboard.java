@@ -94,7 +94,7 @@ public class RemoteRdpKeyboard extends RemoteKeyboard {
         int y = pointer.getY();
 
         if (meta.isMouseClick()) {
-            //Log.i("RemoteRdpKeyboard", "is a mouse click");
+            //android.util.Log.i("RemoteRdpKeyboard", "is a mouse click");
             int button = meta.getMouseButtons();
             switch (button) {
                 case RemoteVncPointer.MOUSE_BUTTON_LEFT:

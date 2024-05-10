@@ -23,7 +23,6 @@ package com.undatech.opaque.dialogs;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +49,7 @@ public class ChoiceFragment extends DialogFragment {
 
     public static ChoiceFragment newInstance(String title, String messageText, String positiveButtonText,
                                              String negativeButtonText, OnFragmentDismissedListener dismissalListener) {
-        Log.d(TAG, "newInstance called");
+        android.util.Log.e(TAG, "newInstance called");
         ChoiceFragment f = new ChoiceFragment();
         f.setOnFragmentDismissedListener(dismissalListener);
 
@@ -84,7 +83,7 @@ public class ChoiceFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate called");
+        android.util.Log.e(TAG, "onCreate called");
         title = getArguments().getString("title");
         messageText = getArguments().getString("messageText");
         positiveButtonText = getArguments().getString("positiveButtonText");
@@ -93,7 +92,7 @@ public class ChoiceFragment extends DialogFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView called");
+        android.util.Log.e(TAG, "onCreateView called");
 
         // Set title for this dialog
         getDialog().setTitle(title);
@@ -126,7 +125,7 @@ public class ChoiceFragment extends DialogFragment {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        Log.d(TAG, "dismiss: sending back data to Activity");
+        android.util.Log.e(TAG, "dismiss: sending back data to Activity");
         if (dismissalListener != null) {
             dismissalListener.onResponseObtained(result);
         }

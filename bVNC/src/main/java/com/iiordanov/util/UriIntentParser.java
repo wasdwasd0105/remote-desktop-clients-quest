@@ -27,7 +27,7 @@ public class UriIntentParser {
     private static final String TAG = "UriIntentParser";
 
     public static ConnectionBean loadFromUriOrCreateNew(Uri dataUri, Context ctx) {
-        Log.d(TAG, "loadFromUriOrCreateNew");
+        android.util.Log.d(TAG, "loadFromUriOrCreateNew");
         ConnectionBean newConnection = new ConnectionBean(ctx);
         if (dataUri == null) {
             return newConnection;

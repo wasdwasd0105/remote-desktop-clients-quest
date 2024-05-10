@@ -22,11 +22,11 @@ public class RemoteToolbar extends Toolbar {
     }
 
     public void setPositionToMakeVisible(
-            int XCoor, int YCoor, int rootRight, int rootBottom, int standardPositionX, int standardPositionY
+            int XCoor, int YCoor, int rootRight, int rootBottom, int resetPositionX, int resetPositionY
     ) {
         if (XCoor > rootRight || YCoor > rootBottom) {
-            this.setX(standardPositionX);
-            this.setY(standardPositionY);
+            this.setX(resetPositionX);
+            this.setY(resetPositionY);
         } else {
             this.setX(XCoor);
             this.setY(YCoor);

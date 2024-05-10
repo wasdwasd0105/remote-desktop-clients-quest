@@ -12,9 +12,9 @@ import com.undatech.opaque.util.GeneralUtils
 class IntentHelper {
 
     fun getIntent(
-        connectionLoader: ConnectionLoader, runtimeId: String, appContext: Context, packageContext: Context
+        connectionLoader: ConnectionLoader, runtimeId: String, windowMode: String, appContext: Context, packageContext: Context
     ): Intent {
-        var intent = getIntentForRemoteCanvasActivity(packageContext)
+        var intent = getIntentForRemoteCanvasActivity(packageContext, windowMode)
         if (Utils.isOpaque(packageContext)) {
             val cs = connectionLoader.connectionsById[runtimeId] as ConnectionSettings?
             cs!!.loadFromSharedPreferences(appContext)
@@ -30,8 +30,18 @@ class IntentHelper {
         return intent
     }
 
-    private fun getIntentForRemoteCanvasActivity(packageContext: Context) =
-        Intent(packageContext, GeneralUtils.getClassByName(Constants.remoteCanvasActivityClassPath))
+    private fun getIntentForRemoteCanvasActivity(packageContext: Context, vrWindowMode: String): Intent {
+        // Example condition: check if the Constants.remoteCanvasActivityClassPath is not empty
+        return if (vrWindowMode == "Huge16_9") {
+            Intent(packageContext, GeneralUtils.getClassByName(Constants.remoteCanvasActivityHuge16_9ClassPath))
+        } else if (vrWindowMode == "Large16_9") {
+            Intent(packageContext, GeneralUtils.getClassByName(Constants.remoteCanvasActivityLarge16_9ClassPath))
+        } else if (vrWindowMode == "Large21_9") {
+            Intent(packageContext, GeneralUtils.getClassByName(Constants.remoteCanvasActivityLarge21_9ClassPath))
+        } else {
+            Intent(packageContext, GeneralUtils.getClassByName(Constants.remoteCanvasActivityClassPath))
+        }
+    }
 
     private fun getUriIntentForVpnClient(
         packageContext: Context, conn: ConnectionBean

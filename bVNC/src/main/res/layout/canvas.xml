@@ -10,27 +10,16 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="bottom|center"
-        android:background="@android:color/background_dark">
-    </com.iiordanov.bVNC.RemoteCanvas>
+        android:background="@android:color/background_dark"></com.iiordanov.bVNC.RemoteCanvas>
 
     <com.undatech.opaque.util.RemoteToolbar
         android:id="@+id/toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|center"
-        android:background="?attr/colorPrimary">
-    </com.undatech.opaque.util.RemoteToolbar>
+        android:background="?attr/colorPrimary"></com.undatech.opaque.util.RemoteToolbar>
 
-    <ImageButton
-        android:id="@+id/keyboardIconForAndroidTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left|center"
-        android:visibility="gone"
-        android:background="@drawable/ic_keyboard_gray_48dp"
-        android:contentDescription="@string/show_keyboard" />
-
-    <RelativeLayout
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/singleHandOpts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,14 +27,14 @@
         android:padding="0dip"
         android:visibility="gone">
 
-        <LinearLayout
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical"
             android:padding="0dip">
 
-            <LinearLayout
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center"
@@ -71,7 +60,7 @@
                     android:background="@drawable/single_right" />
             </LinearLayout>
 
-            <LinearLayout
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"
@@ -99,7 +88,7 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <RelativeLayout
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/layoutKeys"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -108,7 +97,7 @@
         android:paddingBottom="2dip"
         android:visibility="gone">
 
-        <LinearLayout
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/layoutMetaKeys"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -117,7 +106,7 @@
             android:orientation="vertical"
             android:padding="0sp">
 
-            <LinearLayout
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|left"
@@ -185,7 +174,7 @@
                 android:layout_gravity="top|center"
                 android:background="@drawable/upoff" />
 
-            <LinearLayout
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"

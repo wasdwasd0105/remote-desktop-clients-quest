@@ -255,5 +255,9 @@ public class Constants {
     }
     public static final String opaqueConnectionSettingsClassPath = "com.undatech.opaque.ConnectionSettings";
     public static final String remoteCanvasActivityClassPath = "com.iiordanov.bVNC.RemoteCanvasActivity";
+    public static final String remoteCanvasActivityLarge16_9ClassPath = "com.iiordanov.bVNC.RemoteCanvasActivityLarge16_9";
+    public static final String remoteCanvasActivityHuge16_9ClassPath = "com.iiordanov.bVNC.RemoteCanvasActivityHuge16_9";
+
+    public static final String remoteCanvasActivityLarge21_9ClassPath = "com.iiordanov.bVNC.RemoteCanvasActivityLarge21_9";
 
 }

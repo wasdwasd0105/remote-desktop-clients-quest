@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.iiordanov.freeaRDP"
     android:installLocation="auto"
-    android:versionCode="115350"
-    android:versionName="v5.3.5">
+    android:versionCode="115290"
+    android:versionName="v5.2.9">
 
     <uses-permission tools:node="removeAll" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -24,8 +24,8 @@
     <application
         android:name="com.iiordanov.bVNC.App"
         android:allowBackup="false"
-        android:banner="@mipmap/banner_ardp"
-        android:icon="@mipmap/icon_ardp"
+        android:banner="@drawable/banner_ardp"
+        android:icon="@drawable/ardp_icon"
         android:label="@string/freeardp_app_name"
         android:theme="@android:style/Theme.DeviceDefault"
         tools:replace="android:label,android:theme">
